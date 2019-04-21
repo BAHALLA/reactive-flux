@@ -1,2 +1,2 @@
 # reactive-flux
-#use reactive modules of spring to developpe a reactive application 
+#use reactive modules of spring to develope a reactive application 
