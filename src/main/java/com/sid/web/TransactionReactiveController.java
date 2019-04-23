@@ -7,6 +7,7 @@ import com.sid.entities.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -79,5 +80,46 @@ public class TransactionReactiveController {
                         return data.getT2();
                     });
         });
+    }
+
+    @GetMapping(value = "/events/{id}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Double> events(@PathVariable String id){
+        WebClient webClient = WebClient.create("http://localhost:8082");
+
+        Flux<Double> eventFlux = webClient.get()
+                .uri("/streamEvents/"+id)
+                .retrieve().bodyToFlux(Event.class)
+                .map( data -> data.getValue());
+        return eventFlux;
+    }
+}
+
+class Event {
+    private Instant instant;
+    private double value;
+    private String societyId;
+
+    public Instant getInstant() {
+        return instant;
+    }
+
+    public void setInstant(Instant instant) {
+        this.instant = instant;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public String getSocietyId() {
+        return societyId;
+    }
+
+    public void setSocietyId(String societyId) {
+        this.societyId = societyId;
     }
 }
